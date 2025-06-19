@@ -1,22 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-
-const initialDoctors = [
-  {
-    uuid: uuidv4(),
-    user_id: "user001",
-    doctor_type: 1,
-    specialization_id: "spec001",
-    license: "BS123456",
-    introduce: "Chuyên gia nội tổng quát",
-    image: "https://via.placeholder.com/100",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
+import ApiService from "../../src/services/apiService"; // đường dẫn đúng của bạn
 
 export default function UserManage() {
-  const [doctors, setDoctors] = useState(initialDoctors);
+  const [doctors, setDoctors] = useState([]);
   const [form, setForm] = useState({
     uuid: "",
     user_id: "",
@@ -28,6 +15,22 @@ export default function UserManage() {
   });
   const [isEditing, setIsEditing] = useState(false);
 
+  // Load danh sách bác sĩ khi component mount
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
+
+  const fetchDoctors = async () => {
+    try {
+      const res = await ApiService.get("/doctor/getAll");
+      if (res.code === 200) {
+        setDoctors(res.data);
+      }
+    } catch (err) {
+      console.error("Lỗi tải danh sách bác sĩ:", err);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -36,37 +39,28 @@ export default function UserManage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isEditing) {
-      setDoctors((prev) =>
-        prev.map((doc) =>
-          doc.uuid === form.uuid
-            ? { ...form, updated_at: new Date().toISOString() }
-            : doc
-        )
-      );
-    } else {
-      setDoctors((prev) => [
-        ...prev,
-        {
-          ...form,
-          uuid: uuidv4(),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ]);
+    try {
+      if (isEditing) {
+        await ApiService.put(`/doctor/update/${form.uuid}`, form);
+      } else {
+        await ApiService.post("/doctor/add", form);
+      }
+      setForm({
+        uuid: "",
+        user_id: "",
+        doctor_type: 1,
+        specialization_id: "",
+        license: "",
+        introduce: "",
+        image: "",
+      });
+      setIsEditing(false);
+      fetchDoctors();
+    } catch (err) {
+      console.error("Lỗi khi lưu bác sĩ:", err);
     }
-    setForm({
-      uuid: "",
-      user_id: "",
-      doctor_type: 1,
-      specialization_id: "",
-      license: "",
-      introduce: "",
-      image: "",
-    });
-    setIsEditing(false);
   };
 
   const handleEdit = (doctor) => {
@@ -74,8 +68,13 @@ export default function UserManage() {
     setIsEditing(true);
   };
 
-  const handleDelete = (uuid) => {
-    setDoctors((prev) => prev.filter((doc) => doc.uuid !== uuid));
+  const handleDelete = async (uuid) => {
+    try {
+      await ApiService.delete(`/doctor/delete/${uuid}`);
+      fetchDoctors();
+    } catch (err) {
+      console.error("Lỗi khi xoá bác sĩ:", err);
+    }
   };
 
   return (
@@ -83,62 +82,13 @@ export default function UserManage() {
       <h2 className="text-2xl font-bold mb-4">Quản lý Bác sĩ</h2>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mb-6">
-        <input
-          type="text"
-          name="user_id"
-          placeholder="User ID"
-          value={form.user_id}
-          onChange={handleChange}
-          className="border p-2"
-          required
-        />
-        <input
-          type="number"
-          name="doctor_type"
-          placeholder="Loại bác sĩ (số)"
-          value={form.doctor_type}
-          onChange={handleChange}
-          className="border p-2"
-          required
-        />
-        <input
-          type="text"
-          name="specialization_id"
-          placeholder="ID chuyên khoa"
-          value={form.specialization_id}
-          onChange={handleChange}
-          className="border p-2"
-          required
-        />
-        <input
-          type="text"
-          name="license"
-          placeholder="Số giấy phép"
-          value={form.license}
-          onChange={handleChange}
-          className="border p-2"
-          required
-        />
-        <input
-          type="text"
-          name="introduce"
-          placeholder="Giới thiệu"
-          value={form.introduce}
-          onChange={handleChange}
-          className="border p-2 col-span-2"
-        />
-        <input
-          type="text"
-          name="image"
-          placeholder="URL ảnh"
-          value={form.image}
-          onChange={handleChange}
-          className="border p-2 col-span-2"
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white p-2 rounded col-span-2"
-        >
+        <input name="user_id" placeholder="User ID" value={form.user_id} onChange={handleChange} className="border p-2" required />
+        <input name="doctor_type" placeholder="Loại"type="number" value={form.doctor_type} onChange={handleChange} className="border p-2" required />
+        <input name="specialization_id" placeholder="Chuyên Khoa" value={form.specialization_id} onChange={handleChange} className="border p-2" required />
+        <input name="license" placeholder="GPLX" value={form.license} onChange={handleChange} className="border p-2" required />
+        <input name="introduce" placeholder="Giới thiệu" value={form.introduce} onChange={handleChange} className="border p-2 col-span-2" />
+        <input name="image" placeholder="Ảnh" value={form.image} onChange={handleChange} className="border p-2 col-span-2" />
+        <button type="submit"  className="bg-blue-500 text-white p-2 rounded col-span-2">
           {isEditing ? "Cập nhật bác sĩ" : "Thêm bác sĩ"}
         </button>
       </form>
@@ -166,27 +116,13 @@ export default function UserManage() {
               <td className="border p-2">{doc.license}</td>
               <td className="border p-2">{doc.introduce}</td>
               <td className="border p-2">
-                <img
-                  src={doc.image}
-                  alt="ảnh bác sĩ"
-                  className="w-16 h-16 object-cover"
-                />
+                <img src={doc.image} alt="ảnh bác sĩ" className="w-16 h-16 object-cover" />
               </td>
-              <td className="border p-2">{doc.created_at}</td>
-              <td className="border p-2">{doc.updated_at}</td>
+              <td className="border p-2">{new Date(doc.created_at).toLocaleString()}</td>
+              <td className="border p-2">{new Date(doc.updated_at).toLocaleString()}</td>
               <td className="border p-2">
-                <button
-                  onClick={() => handleEdit(doc)}
-                  className="bg-yellow-400 px-2 py-1 rounded mr-2"
-                >
-                  Sửa
-                </button>
-                <button
-                  onClick={() => handleDelete(doc.uuid)}
-                  className="bg-red-500 px-2 py-1 text-white rounded"
-                >
-                  Xoá
-                </button>
+                <button onClick={() => handleEdit(doc)} className="bg-yellow-400 px-2 py-1 rounded mr-2">Sửa</button>
+                <button onClick={() => handleDelete(doc.uuid)} className="bg-red-500 px-2 py-1 text-white rounded">Xoá</button>
               </td>
             </tr>
           ))}

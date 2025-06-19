@@ -52,8 +52,9 @@ export default function AdminTable() {
       if (form.imageFile) {
         formData.append("image", form.imageFile);
       } else if (form.imageUrl) {
-        formData.append("imageUrl", form.imageUrl);
+        formData.append("image", form.imageUrl); // ✅ đổi tên thành 'image'
       }
+      
 
       if (isEditing) {
         await ApiService.put(`/hospital/update/${form.uuid}`, formData);

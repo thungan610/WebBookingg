@@ -1,22 +1,9 @@
-import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import "./Review.css"; // import CSS riêng
-
-const initialData = [
-  {
-    uuid: uuidv4(),
-    name: "Khoa Nhi",
-    address: "Số 5 Lê Lợi, Q.1",
-    phone: "0987654321",
-    email: "khoanhi@hospital.vn",
-    image: "https://via.placeholder.com/80",
-    hospital_id: "hospital001",
-    created_at: new Date().toISOString(),
-  },
-];
+import React, { useEffect, useState } from "react";
+import ApiService from "../../src/services/apiService";
+import "./Review.css";
 
 export default function Review() {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
   const [form, setForm] = useState({
     uuid: "",
     name: "",
@@ -28,39 +15,55 @@ export default function Review() {
   });
   const [isEditing, setIsEditing] = useState(false);
 
+  useEffect(() => {
+    fetchClinics();
+  }, []);
+
+  const fetchClinics = async () => {
+    try {
+      const result = await ApiService.get("/clinic/getAll");
+      if (result.code === 200) setData(result.data);
+    } catch (err) {
+      console.error("Lỗi khi tải dữ liệu phòng ban:", err);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isEditing) {
-      setData((prev) =>
-        prev.map((item) =>
-          item.uuid === form.uuid ? { ...form } : item
-        )
-      );
-    } else {
-      setData((prev) => [
-        ...prev,
-        {
-          ...form,
-          uuid: uuidv4(),
-          created_at: new Date().toISOString(),
-        },
-      ]);
+    try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("address", form.address);
+      formData.append("phone", form.phone);
+      formData.append("email", form.email);
+      formData.append("image", form.image); // link ảnh
+      formData.append("hospital_id", form.hospital_id);
+
+      if (isEditing) {
+        await ApiService.put(`/clinic/update/${form.uuid}`, formData);
+      } else {
+        await ApiService.post("/clinic/add", formData);
+      }
+
+      setForm({
+        uuid: "",
+        name: "",
+        address: "",
+        phone: "",
+        email: "",
+        image: "",
+        hospital_id: "",
+      });
+      setIsEditing(false);
+      fetchClinics();
+    } catch (err) {
+      console.error("Lỗi khi gửi form:", err);
     }
-    setForm({
-      uuid: "",
-      name: "",
-      address: "",
-      phone: "",
-      email: "",
-      image: "",
-      hospital_id: "",
-    });
-    setIsEditing(false);
   };
 
   const handleEdit = (item) => {
@@ -68,8 +71,13 @@ export default function Review() {
     setIsEditing(true);
   };
 
-  const handleDelete = (uuid) => {
-    setData((prev) => prev.filter((item) => item.uuid !== uuid));
+  const handleDelete = async (uuid) => {
+    try {
+      await ApiService.delete(`/clinic/delete/${uuid}`);
+      fetchClinics();
+    } catch (err) {
+      console.error("Lỗi khi xoá:", err);
+    }
   };
 
   return (
@@ -80,7 +88,7 @@ export default function Review() {
         <input name="address" value={form.address} onChange={handleChange} placeholder="Địa chỉ" required />
         <input name="phone" value={form.phone} onChange={handleChange} placeholder="SĐT" />
         <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
-        <input name="image" value={form.image} onChange={handleChange} placeholder="Ảnh (URL)" />
+        <input name="image" value={form.image} onChange={handleChange} placeholder="Link ảnh (https://...)" />
         <input name="hospital_id" value={form.hospital_id} onChange={handleChange} placeholder="Mã bệnh viện" />
         <button type="submit">{isEditing ? "Cập nhật" : "Thêm mới"}</button>
       </form>
@@ -105,7 +113,16 @@ export default function Review() {
               <td>{item.address}</td>
               <td>{item.phone}</td>
               <td>{item.email}</td>
-              <td><img src={item.image} alt="" className="admin-image" /></td>
+              <td>
+                <img
+                  src={item.image || "https://via.placeholder.com/80"}
+                  alt="Ảnh"
+                  className="admin-image"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/80";
+                  }}
+                />
+              </td>
               <td>{item.hospital_id}</td>
               <td>{new Date(item.created_at).toLocaleString()}</td>
               <td>
