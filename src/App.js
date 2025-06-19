@@ -26,11 +26,11 @@ import Comment from "./Screen/Comment";
 import Payment from "./Screen/Payment";
 import ChartWeek from "./Screen/ChartWeek"
 import OrderDetail from "./Screen/OrderDetail";
-import PromotionManagementment from "./Screen/PromotionManagement";
+import PromotionManagementment from "./Screen/MedicalRecordList";
 import UpdateSale from "./Screen/UpdateSale";
 import TopProductsChart from "./Screen/ChartWeek";
 import Review from "./Screen/Revview";
-import MedicalRecordList from "./Screen/PromotionManagement";
+import MedicalRecordList from "./Screen/MedicalRecordList";
 function App() {
   const getAdminFromLocalStorage = () => {
     const adminInfo = localStorage.getItem("admin");

@@ -1,24 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import ApiService from "../../src/services/apiService";
 import "./QLHH.css";
 
-const initialServices = [
-  {
-    uuid: uuidv4(),
-    name: "Khám tim mạch",
-    description: "Kiểm tra tổng quát hệ tim mạch",
-    price: 500000,
-    specialization_id: "spec001",
-    clinic_id: "clinic001",
-    hospital_id: "hospital001",
-    image: "https://via.placeholder.com/80",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
-
 export default function QLHH() {
-  const [services, setServices] = useState(initialServices);
+  const [services, setServices] = useState([]);
   const [form, setForm] = useState({
     uuid: "",
     name: "",
@@ -31,53 +17,68 @@ export default function QLHH() {
   });
   const [isEditing, setIsEditing] = useState(false);
 
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      const res = await ApiService.get("medical_service/getAll");
+      if (res.code === 200) setServices(res.data);
+    } catch (err) {
+      console.error("Lỗi tải dịch vụ:", err);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isEditing) {
-      setServices((prev) =>
-        prev.map((item) =>
-          item.uuid === form.uuid
-            ? { ...form, updated_at: new Date().toISOString() }
-            : item
-        )
-      );
-    } else {
-      setServices((prev) => [
-        ...prev,
-        {
+    try {
+      if (isEditing) {
+        await ApiService.put(`medical_service/update/${form.uuid}`, {
+          ...form,
+          price: parseFloat(form.price),
+        });
+      } else {
+        await ApiService.post("medical_service/create", {
           ...form,
           uuid: uuidv4(),
           price: parseFloat(form.price),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ]);
+        });
+      }
+      setForm({
+        uuid: "",
+        name: "",
+        description: "",
+        price: "",
+        specialization_id: "",
+        clinic_id: "",
+        hospital_id: "",
+        image: "",
+      });
+      setIsEditing(false);
+      fetchServices();
+    } catch (err) {
+      console.error("Lỗi khi gửi dữ liệu:", err);
     }
-    setForm({
-      uuid: "",
-      name: "",
-      description: "",
-      price: "",
-      specialization_id: "",
-      clinic_id: "",
-      hospital_id: "",
-      image: "",
-    });
-    setIsEditing(false);
   };
 
   const handleEdit = (item) => {
-    setForm(item);
+    setForm({ ...item });
     setIsEditing(true);
   };
 
-  const handleDelete = (uuid) => {
-    setServices((prev) => prev.filter((item) => item.uuid !== uuid));
+  const handleDelete = async (uuid) => {
+    try {
+      await ApiService.delete(`medical_service/delete/${uuid}`);
+      fetchServices();
+    } catch (err) {
+      console.error("Lỗi khi xóa:", err);
+    }
   };
 
   return (
@@ -90,7 +91,7 @@ export default function QLHH() {
         <input name="specialization_id" placeholder="Mã chuyên khoa" value={form.specialization_id} onChange={handleChange} />
         <input name="clinic_id" placeholder="Mã phòng khám" value={form.clinic_id} onChange={handleChange} />
         <input name="hospital_id" placeholder="Mã bệnh viện" value={form.hospital_id} onChange={handleChange} />
-        <input  name="image" placeholder="Link ảnh" value={form.image} onChange={handleChange} />
+        <input name="image" placeholder="Link ảnh" value={form.image} onChange={handleChange} />
         <button type="submit">{isEditing ? "Cập nhật" : "Thêm mới"}</button>
       </form>
 
@@ -114,8 +115,10 @@ export default function QLHH() {
             <tr key={item.uuid}>
               <td>{item.name}</td>
               <td>{item.description}</td>
-              <td>{item.price.toLocaleString()}₫</td>
-              <td><img src={item.image} alt={item.name} className="service-img" /></td>
+              <td>{item.price?.toLocaleString()}₫</td>
+              <td>
+                <img src={item.image} alt={item.name} className="service-img" />
+              </td>
               <td>{item.specialization_id}</td>
               <td>{item.clinic_id}</td>
               <td>{item.hospital_id}</td>

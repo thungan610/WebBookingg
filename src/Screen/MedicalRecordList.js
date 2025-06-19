@@ -1,23 +1,26 @@
-import React, { useState } from "react";
-import "./PromotionManagement.css";
-
-const initialRecords = [
-  {
-    uuid: "rec001",
-    patient_id: "pat001",
-    created_at: "2025-06-01T10:00:00Z",
-    updated_at: "2025-06-10T14:00:00Z",
-  },
-  {
-    uuid: "rec002",
-    patient_id: "pat002",
-    created_at: "2025-06-03T09:30:00Z",
-    updated_at: "2025-06-15T17:45:00Z",
-  },
-];
+import React, { useEffect, useState } from "react";
+import ApiService from "../../src/services/apiService"; // Đảm bảo path đúng
+import "./MedicalRecordList.css";
 
 export default function MedicalRecordList() {
-  const [records] = useState(initialRecords);
+  const [records, setRecords] = useState([]);
+
+  useEffect(() => {
+    fetchRecords();
+  }, []);
+
+  const fetchRecords = async () => {
+    try {
+      const res = await ApiService.get("/medicalRecord/getAll");
+      if (res.code === 200) {
+        setRecords(res.data);
+      } else {
+        console.error("Lỗi khi gọi API:", res.msg);
+      }
+    } catch (err) {
+      console.error("Lỗi kết nối API:", err);
+    }
+  };
 
   return (
     <div className="record-container">

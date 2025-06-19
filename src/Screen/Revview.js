@@ -1,54 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import ApiService from "../../src/services/apiService";
 import "./Chart.css";
-const initialReviews = [
-  {
-    uuid: "r1",
-    user_id: "user1",
-    doctor_id: "doc1",
-    appointment_id: "app1",
-    stars: 5,
-    comment: "Bác sĩ rất nhiệt tình.",
-    created_at: "2025-06-01T12:00:00Z",
-    updated_at: "2025-06-01T12:00:00Z",
-  },
-  {
-    uuid: "r2",
-    user_id: "user2",
-    doctor_id: "doc2",
-    appointment_id: "app2",
-    stars: 3,
-    comment: "Dịch vụ trung bình.",
-    created_at: "2025-06-05T09:00:00Z",
-    updated_at: "2025-06-05T09:00:00Z",
-  },
-];
 
 export default function Review() {
-  const [reviews, setReviews] = useState(initialReviews);
-  const [editingReview, setEditingReview] = useState(null);
+  const [reviews, setReviews] = useState([]);
 
- 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEditingReview((prev) => ({
-      ...prev,
-      [name]: name === "stars" ? parseInt(value) : value,
-    }));
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const fetchReviews = async () => {
+    try {
+      const res = await ApiService.get("/review/getAll");
+      if (res.code === 200) setReviews(res.data);
+    } catch (err) {
+      console.error("Lỗi khi tải đánh giá:", err);
+    }
   };
 
-  const handleUpdate = () => {
-    setReviews((prev) =>
-      prev.map((r) =>
-        r.uuid === editingReview.uuid
-          ? { ...editingReview, updated_at: new Date().toISOString() }
-          : r
-      )
-    );
-    setEditingReview(null);
-  };
-
-  const handleDelete = (uuid) => {
-    setReviews((prev) => prev.filter((r) => r.uuid !== uuid));
+  const handleDelete = async (uuid) => {
+    try {
+      await ApiService.delete(`/review/delete/${uuid}`);
+      fetchReviews();
+    } catch (err) {
+      console.error("Lỗi khi xóa:", err);
+    }
   };
 
   return (
@@ -73,55 +49,17 @@ export default function Review() {
               <td className="border p-2">{r.user_id}</td>
               <td className="border p-2">{r.doctor_id}</td>
               <td className="border p-2">{r.appointment_id}</td>
+              <td className="border p-2">{r.stars}</td>
+              <td className="border p-2">{r.comment}</td>
+              <td className="border p-2">{new Date(r.created_at).toLocaleString()}</td>
+              <td className="border p-2">{new Date(r.updated_at).toLocaleString()}</td>
               <td className="border p-2">
-                {editingReview?.uuid === r.uuid ? (
-                  <input
-                    type="number"
-                    name="stars"
-                    min="1"
-                    max="5"
-                    value={editingReview.stars}
-                    onChange={handleChange}
-                    className="border p-1 w-16"
-                  />
-                ) : (
-                  r.stars
-                )}
-              </td>
-              <td className="border p-2">
-                {editingReview?.uuid === r.uuid ? (
-                  <input
-                    type="text"
-                    name="comment"
-                    value={editingReview.comment}
-                    onChange={handleChange}
-                    className="border p-1 w-full"
-                  />
-                ) : (
-                  r.comment
-                )}
-              </td>
-              <td className="border p-2">{r.created_at}</td>
-              <td className="border p-2">{r.updated_at}</td>
-              <td className="border p-2">
-                {editingReview?.uuid === r.uuid ? (
-                  <button
-                    onClick={handleUpdate}
-                    className="bg-blue-500 text-white px-2 py-1 rounded"
-                  >
-                    Lưu
-                  </button>
-                ) : (
-                  <>
-                  
-                    <button
-                      onClick={() => handleDelete(r.uuid)}
-                      className="bg-red-500 text-white px-2 py-1 rounded"
-                    >
-                      Xoá
-                    </button>
-                  </>
-                )}
+                <button
+                  onClick={() => handleDelete(r.uuid)}
+                  className="bg-red-500 text-white px-2 py-1 rounded"
+                >
+                  Xoá
+                </button>
               </td>
             </tr>
           ))}
