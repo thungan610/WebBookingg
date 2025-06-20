@@ -101,7 +101,6 @@ export default function Review() {
             <th>SĐT</th>
             <th>Email</th>
             <th>Ảnh</th>
-            <th>Hospital ID</th>
             <th>Tạo lúc</th>
             <th>Hành động</th>
           </tr>
@@ -123,7 +122,7 @@ export default function Review() {
                   }}
                 />
               </td>
-              <td>{item.hospital_id}</td>
+            
               <td>{new Date(item.created_at).toLocaleString()}</td>
               <td>
                 <button className="edit-btn" onClick={() => handleEdit(item)}>Sửa</button>

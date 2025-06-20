@@ -79,3 +79,29 @@
   background-color: #dc3545;
   color: white;
 }
+.service-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.edit-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  margin: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  margin: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
