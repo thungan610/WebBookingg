@@ -30,6 +30,7 @@ export default function Review() {
   return (
     <div className="p-4 max-w-5xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Danh sách đánh giá</h2>
+      <div className="table-scroll">
       <table className="w-full border">
         <thead className="bg-gray-100">
           <tr>
@@ -51,8 +52,12 @@ export default function Review() {
               <td className="border p-2">{r.appointment_id}</td>
               <td className="border p-2">{r.stars}</td>
               <td className="border p-2">{r.comment}</td>
-              <td className="border p-2">{new Date(r.created_at).toLocaleString()}</td>
-              <td className="border p-2">{new Date(r.updated_at).toLocaleString()}</td>
+              <td className="border p-2">
+                {new Date(r.created_at).toLocaleString()}
+              </td>
+              <td className="border p-2">
+                {new Date(r.updated_at).toLocaleString()}
+              </td>
               <td className="border p-2">
                 <button
                   onClick={() => handleDelete(r.uuid)}
@@ -65,6 +70,7 @@ export default function Review() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

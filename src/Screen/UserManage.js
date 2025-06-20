@@ -81,14 +81,14 @@ export default function UserManage() {
     <div className="p-4 max-w-6xl mx-auto">
       <form
         onSubmit={handleSubmit}
-        className="grid grid-cols-2 gap-x-1 gap-y-2 mb-6"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6"
       >
         <input
           name="user_id"
           placeholder="User ID"
           value={form.user_id}
           onChange={handleChange}
-          className="border p-2"
+          className="border p-2 rounded"
           required
         />
         <input
@@ -97,7 +97,7 @@ export default function UserManage() {
           type="number"
           value={form.doctor_type}
           onChange={handleChange}
-          className="border p-2"
+          className="border p-2 rounded"
           required
         />
         <input
@@ -105,7 +105,7 @@ export default function UserManage() {
           placeholder="Chuyên Khoa"
           value={form.specialization_id}
           onChange={handleChange}
-          className="border p-2"
+          className="border p-2 rounded"
           required
         />
         <input
@@ -113,26 +113,26 @@ export default function UserManage() {
           placeholder="GPLX"
           value={form.license}
           onChange={handleChange}
-          className="border p-2"
+          className="border p-2 rounded"
           required
         />
         <input
           name="introduce"
-placeholder="Giới thiệu"
+          placeholder="Giới thiệu"
           value={form.introduce}
           onChange={handleChange}
-          className="border p-2 col-span-2"
+          className="border p-2 rounded col-span-full"
         />
         <input
           name="image"
-          placeholder="Ảnh"
+          placeholder="Link ảnh"
           value={form.image}
           onChange={handleChange}
-          className="border p-2 col-span-2"
+          className="border p-2 rounded col-span-full"
         />
         <button
           type="submit"
-          className="bg-blue-500 text-white p-2 rounded col-span-2"
+          className="bg-blue-500 text-white p-2 rounded font-semibold col-span-full"
         >
           {isEditing ? "Cập nhật bác sĩ" : "Thêm bác sĩ"}
         </button>

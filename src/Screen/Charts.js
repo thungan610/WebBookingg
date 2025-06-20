@@ -84,54 +84,95 @@ export default function Review() {
     <div className="admin-container">
       <h2 className="admin-title">Quản lý phòng ban</h2>
       <form onSubmit={handleSubmit} className="admin-form">
-        <input name="name" value={form.name} onChange={handleChange} placeholder="Tên" required />
-        <input name="address" value={form.address} onChange={handleChange} placeholder="Địa chỉ" required />
-        <input name="phone" value={form.phone} onChange={handleChange} placeholder="SĐT" />
-        <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
-        <input name="image" value={form.image} onChange={handleChange} placeholder="Link ảnh (https://...)" />
-        <input name="hospital_id" value={form.hospital_id} onChange={handleChange} placeholder="Mã bệnh viện" />
+        <input
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          placeholder="Tên"
+          required
+        />
+        <input
+          name="address"
+          value={form.address}
+          onChange={handleChange}
+          placeholder="Địa chỉ"
+          required
+        />
+        <input
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          placeholder="SĐT"
+        />
+        <input
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          placeholder="Email"
+        />
+        <input
+          name="image"
+          value={form.image}
+          onChange={handleChange}
+          placeholder="Link ảnh (https://...)"
+        />
+        <input
+          name="hospital_id"
+          value={form.hospital_id}
+          onChange={handleChange}
+          placeholder="Mã bệnh viện"
+        />
         <button type="submit">{isEditing ? "Cập nhật" : "Thêm mới"}</button>
       </form>
 
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>Tên</th>
-            <th>Địa chỉ</th>
-            <th>SĐT</th>
-            <th>Email</th>
-            <th>Ảnh</th>
-            <th>Tạo lúc</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item) => (
-            <tr key={item.uuid}>
-              <td>{item.name}</td>
-              <td>{item.address}</td>
-              <td>{item.phone}</td>
-              <td>{item.email}</td>
-              <td>
-                <img
-                  src={item.image || "https://via.placeholder.com/80"}
-                  alt="Ảnh"
-                  className="admin-image"
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/80";
-                  }}
-                />
-              </td>
-            
-              <td>{new Date(item.created_at).toLocaleString()}</td>
-              <td>
-                <button className="edit-btn" onClick={() => handleEdit(item)}>Sửa</button>
-                <button className="delete-btn" onClick={() => handleDelete(item.uuid)}>Xoá</button>
-              </td>
+      <div className="table-scroll">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Tên</th>
+              <th>Địa chỉ</th>
+              <th>SĐT</th>
+              <th>Email</th>
+              <th>Ảnh</th>
+              <th>Tạo lúc</th>
+              <th>Hành động</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((item) => (
+              <tr key={item.uuid}>
+                <td>{item.name}</td>
+                <td>{item.address}</td>
+                <td>{item.phone}</td>
+                <td>{item.email}</td>
+                <td>
+                  <img
+                    src={item.image || "https://via.placeholder.com/80"}
+                    alt="Ảnh"
+                    className="admin-image"
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/80";
+                    }}
+                  />
+                </td>
+
+                <td>{new Date(item.created_at).toLocaleString()}</td>
+                <td>
+                  <button className="edit-btn" onClick={() => handleEdit(item)}>
+                    Sửa
+                  </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(item.uuid)}
+                  >
+                    Xoá
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

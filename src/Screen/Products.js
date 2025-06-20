@@ -127,13 +127,13 @@ export default function AdminTable() {
 
         {/* Gộp chọn ảnh và nhập link ảnh vào cùng một dòng */}
         <div className="flex gap-2 items-center">
-          <input
+          {/* <input
             type="file"
             name="imageFile"
             accept="image/*"
             onChange={handleChange}
             className="border p-2 w-1/2"
-          />
+          /> */}
           <input
             type="text"
             name="imageUrl"
@@ -148,8 +148,9 @@ export default function AdminTable() {
           {isEditing ? "Cập nhật" : "Thêm mới"}
         </button>
       </form>
-
+  
       <div className="overflow-auto max-h-[400px] border rounded">
+       <div className="table-scroll">
         <table className="min-w-full border">
           <thead className="bg-gray-100 sticky top-0 z-10">
             <tr>
@@ -192,6 +193,7 @@ export default function AdminTable() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

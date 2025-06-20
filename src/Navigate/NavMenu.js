@@ -11,7 +11,7 @@ import { Layout, Menu, theme, Modal } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./NavMenu.css";
 import { AdminContext } from "../../src/Component/AdminProvider";
-import logoBlue2 from "../assets/images/logoBlue2.jpg";
+import bvs from "../assets/images/bvs.png";
 // import Search from "../Component/Search";
 import "@fontsource/roboto";
 import "@fontsource/roboto/400.css";
@@ -90,7 +90,7 @@ const NavMenu = ({ children, isHidden, onLogout }) => {
         {!isHidden && (
           <Sider width={260} className="slider">
             <div className="logo-container">
-              <img src={logoBlue2} className="logoBlue" alt="logo" />
+              <img src={bvs} className="logoBlue" alt="logo" />
             </div>
 
             <Menu

@@ -25,26 +25,28 @@ export default function MedicalRecordList() {
   return (
     <div className="record-container">
       <h2 className="record-title">Danh sách hồ sơ bệnh án</h2>
-      <table className="record-table">
-        <thead>
-          <tr>
-            <th>UUID</th>
-            <th>Patient ID</th>
-            <th>Ngày tạo</th>
-            <th>Ngày cập nhật</th>
-          </tr>
-        </thead>
-        <tbody>
-          {records.map((rec) => (
-            <tr key={rec.uuid}>
-              <td>{rec.uuid}</td>
-              <td>{rec.patient_id}</td>
-              <td>{new Date(rec.created_at).toLocaleString()}</td>
-              <td>{new Date(rec.updated_at).toLocaleString()}</td>
+      <div className="table-scroll">
+        <table className="record-table">
+          <thead>
+            <tr>
+              <th>UUID</th>
+              <th>Patient ID</th>
+              <th>Ngày tạo</th>
+              <th>Ngày cập nhật</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {records.map((rec) => (
+              <tr key={rec.uuid}>
+                <td>{rec.uuid}</td>
+                <td>{rec.patient_id}</td>
+                <td>{new Date(rec.created_at).toLocaleString()}</td>
+                <td>{new Date(rec.updated_at).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
