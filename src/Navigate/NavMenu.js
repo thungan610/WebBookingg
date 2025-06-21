@@ -131,13 +131,24 @@ const NavMenu = ({ children, isHidden, onLogout }) => {
                   icon: <BarChartOutlined />,
                   label: "Dịch vụ y tế",
                 },
+                {
+                  key: "/Loginn",
+                  icon: <BarChartOutlined />,
+                  label: "Login",
+                },
 
+                {
+                  key: "/Register",
+                  icon: <BarChartOutlined />,
+                  label: "Register",
+                },
                 // Mục đăng xuất trong menu
                 {
                   key: "logout",
                   icon: <PoweroffOutlined />,
                   label: "Đăng xuất",
                 },
+                
               ]}
               onClick={handleMenuClick}
             />

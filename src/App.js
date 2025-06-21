@@ -31,6 +31,8 @@ import UpdateSale from "./Screen/UpdateSale";
 import TopProductsChart from "./Screen/ChartWeek";
 import Review from "./Screen/Revview";
 import MedicalRecordList from "./Screen/MedicalRecordList";
+import Register from "./Screen/Register";
+import Loginn from "./Screen/Loginn";
 function App() {
   const getAdminFromLocalStorage = () => {
     const adminInfo = localStorage.getItem("admin");
@@ -85,6 +87,8 @@ function App() {
               <Route path="/ChartRevenue" element={<TopProductsChart />} />
               <Route path="/OrderDetail/:id" element={<OrderDetail />} />
               <Route path="/login" element={<Navigate to="/charts" />} />
+              <Route path="/Loginn" element={<Loginn />} />
+              <Route path="/Register" element={<Register />} />
             </Routes>
           </NavMenu>
         </AdminProvider>
