@@ -1,189 +1,188 @@
 import React, { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import ApiService from "../../src/services/apiService"; // đường dẫn đúng của bạn
+import ApiService from "../../src/services/apiService";
+import "./Review.css";
 
-export default function UserManage() {
-  const [doctors, setDoctors] = useState([]);
+export default function Review() {
+  const [data, setData] = useState([]);
+  const [hospitals, setHospitals] = useState([]);
   const [form, setForm] = useState({
     uuid: "",
-    user_id: "",
-    doctor_type: 1,
-    specialization_id: "",
-    license: "",
-    introduce: "",
+    name: "",
+    address: "",
+    phone: "",
+    email: "",
     image: "",
+    hospital_id: "",
   });
   const [isEditing, setIsEditing] = useState(false);
 
-  // Load danh sách bác sĩ khi component mount
   useEffect(() => {
-    fetchDoctors();
+    fetchClinics();
+    fetchHospitals();
   }, []);
 
-  const fetchDoctors = async () => {
+  const fetchClinics = async () => {
     try {
-      const res = await ApiService.get("/doctor/getAll");
-      if (res.code === 200) {
-        setDoctors(res.data);
-      }
+      const result = await ApiService.get("/clinic/getAll");
+      if (result.code === 200) setData(result.data);
     } catch (err) {
-      console.error("Lỗi tải danh sách bác sĩ:", err);
+      console.error("Lỗi khi tải dữ liệu phòng ban:", err);
+    }
+  };
+
+  const fetchHospitals = async () => {
+    try {
+      const result = await ApiService.get("/hospital/getAll");
+      if (result.code === 200) setHospitals(result.data);
+    } catch (err) {
+      console.error("Lỗi khi tải danh sách bệnh viện:", err);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: name === "doctor_type" ? parseInt(value) : value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("address", form.address);
+      formData.append("phone", form.phone);
+      formData.append("email", form.email);
+      formData.append("image", form.image);
+      formData.append("hospital_id", form.hospital_id);
+
       if (isEditing) {
-        await ApiService.put(`/doctor/update/${form.uuid}`, form);
+        await ApiService.put(`/clinic/update/${form.uuid}`, formData);
       } else {
-        await ApiService.post("/doctor/add", form);
+        await ApiService.post("/clinic/add", formData);
       }
+
       setForm({
         uuid: "",
-        user_id: "",
-        doctor_type: 1,
-        specialization_id: "",
-        license: "",
-        introduce: "",
+        name: "",
+        address: "",
+        phone: "",
+        email: "",
         image: "",
+        hospital_id: "",
       });
       setIsEditing(false);
-      fetchDoctors();
+      fetchClinics();
     } catch (err) {
-      console.error("Lỗi khi lưu bác sĩ:", err);
+      console.error("Lỗi khi gửi form:", err);
     }
   };
 
-  const handleEdit = (doctor) => {
-    setForm(doctor);
+  const handleEdit = (item) => {
+    setForm(item);
     setIsEditing(true);
   };
 
   const handleDelete = async (uuid) => {
     try {
-      await ApiService.delete(`/doctor/delete/${uuid}`);
-      fetchDoctors();
+      await ApiService.delete(`/clinic/delete/${uuid}`);
+      fetchClinics();
     } catch (err) {
-      console.error("Lỗi khi xoá bác sĩ:", err);
+      console.error("Lỗi khi xoá:", err);
     }
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6"
-      >
+    <div className="admin-container">
+      <h2 className="admin-title">Quản lý phòng ban</h2>
+      <form onSubmit={handleSubmit} className="admin-form">
         <input
-          name="user_id"
-          placeholder="User ID"
-          value={form.user_id}
+          name="name"
+          value={form.name}
           onChange={handleChange}
-          className="border p-2 rounded"
+          placeholder="Tên"
           required
         />
         <input
-          name="doctor_type"
-          placeholder="Loại"
-          type="number"
-          value={form.doctor_type}
+          name="address"
+          value={form.address}
           onChange={handleChange}
-          className="border p-2 rounded"
+          placeholder="Địa chỉ"
           required
         />
         <input
-          name="specialization_id"
-          placeholder="Chuyên Khoa"
-          value={form.specialization_id}
+          name="phone"
+          value={form.phone}
           onChange={handleChange}
-          className="border p-2 rounded"
-          required
+          placeholder="SĐT"
         />
-        <input
-          name="license"
-          placeholder="GPLX"
-          value={form.license}
+<input
+          name="email"
+          value={form.email}
           onChange={handleChange}
-          className="border p-2 rounded"
-          required
-        />
-        <input
-          name="introduce"
-          placeholder="Giới thiệu"
-          value={form.introduce}
-          onChange={handleChange}
-          className="border p-2 rounded col-span-full"
+          placeholder="Email"
         />
         <input
           name="image"
-          placeholder="Link ảnh"
           value={form.image}
           onChange={handleChange}
-          className="border p-2 rounded col-span-full"
+          placeholder="Link ảnh (https://...)"
         />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white p-2 rounded font-semibold col-span-full"
+
+        <select
+          name="hospital_id"
+          value={form.hospital_id}
+          onChange={handleChange}
+     
         >
-          {isEditing ? "Cập nhật bác sĩ" : "Thêm bác sĩ"}
-        </button>
+          <option value="">-- Chọn bệnh viện --</option>
+          {hospitals.map((h) => (
+            <option key={h.uuid} value={h.uuid}>
+              {h.name}
+            </option>
+          ))}
+        </select>
+
+        <button type="submit">{isEditing ? "Cập nhật" : "Thêm mới"}</button>
       </form>
 
       <div className="table-scroll">
-        <table className="w-full border">
-          <thead className="bg-gray-100">
+        <table className="admin-table">
+          <thead>
             <tr>
-              <th className="border p-2">User ID</th>
-              <th className="border p-2">Loại</th>
-              <th className="border p-2">Chuyên khoa</th>
-              <th className="border p-2">GPLX</th>
-              <th className="border p-2">Giới thiệu</th>
-              <th className="border p-2">Ảnh</th>
-              <th className="border p-2">Tạo lúc</th>
-              <th className="border p-2">Cập nhật</th>
-              <th className="border p-2">Hành động</th>
+              <th>Tên</th>
+              <th>Địa chỉ</th>
+              <th>SĐT</th>
+              <th>Email</th>
+              <th>Ảnh</th>
+              <th>Tạo lúc</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
-            {doctors.map((doc) => (
-              <tr key={doc.uuid}>
-                <td className="border p-2">{doc.user_id}</td>
-                <td className="border p-2">{doc.doctor_type}</td>
-                <td className="border p-2">{doc.specialization_id}</td>
-                <td className="border p-2">{doc.license}</td>
-                <td className="border p-2">{doc.introduce}</td>
-                <td className="border p-2">
+            {data.map((item) => (
+              <tr key={item.uuid}>
+                <td>{item.name}</td>
+                <td>{item.address}</td>
+                <td>{item.phone}</td>
+                <td>{item.email}</td>
+                <td>
                   <img
-                    src={doc.image}
-                    alt="ảnh bác sĩ"
-                    className="w-16 h-16 object-cover"
+                    src={item.image || "https://via.placeholder.com/80"}
+                    alt="Ảnh"
+                    className="admin-image"
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/80";
+                    }}
                   />
                 </td>
-                <td className="border p-2">
-                  {new Date(doc.created_at).toLocaleString()}
-                </td>
-                <td className="border p-2">
-                  {new Date(doc.updated_at).toLocaleString()}
-                </td>
-                <td className="border p-2">
-                  <button
-                    onClick={() => handleEdit(doc)}
-                    className="bg-yellow-400 px-2 py-1 rounded mr-2"
-                  >
+                <td>{new Date(item.created_at).toLocaleString()}</td>
+                <td>
+                  <button className="edit-btn" onClick={() => handleEdit(item)}>
                     Sửa
                   </button>
                   <button
-                    onClick={() => handleDelete(doc.uuid)}
-                    className="bg-red-500 px-2 py-1 text-white rounded"
+                    className="delete-btn"
+                    onClick={() => handleDelete(item.uuid)}
                   >
                     Xoá
                   </button>

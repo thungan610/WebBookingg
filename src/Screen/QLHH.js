@@ -17,6 +17,7 @@ export default function QLHH() {
     image: "",
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [showHospitalSelect, setShowHospitalSelect] = useState(true);
 
   const [specializations, setSpecializations] = useState([]);
   const [clinics, setClinics] = useState([]);
@@ -56,7 +57,18 @@ export default function QLHH() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  
+    if (name === "clinic_id") {
+      const selectedClinic = clinics.find((c) => c.uuid === value);
+      if (selectedClinic && !selectedClinic.hospital_id) {
+        setShowHospitalSelect(false);
+        setForm((prev) => ({ ...prev, hospital_id: "" }));
+      } else {
+        setShowHospitalSelect(true);
+      }
+    }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -95,8 +107,7 @@ export default function QLHH() {
     setForm({ ...item });
     setIsEditing(true);
   };
-
-  const handleDelete = async (uuid) => {
+const handleDelete = async (uuid) => {
     try {
       console.log("UUID muốn xoá:", uuid);
       const res = await ApiService.delete(`medical_service/delete/${uuid}`);
@@ -164,20 +175,21 @@ export default function QLHH() {
             </option>
           ))}
         </select>
-
-        <select
-          name="hospital_id"
-          value={form.hospital_id}
-          onChange={handleChange}
-          required
-        >
-          <option value="">-- Chọn bệnh viện --</option>
-          {hospitals.map((h) => (
-            <option key={h.uuid} value={h.uuid}>
-              {h.name}
-            </option>
-          ))}
-        </select>
+        {showHospitalSelect && (
+          <select
+            name="hospital_id"
+            value={form.hospital_id}
+            onChange={handleChange}
+            required
+          >
+            <option value="">-- Chọn bệnh viện --</option>
+            {hospitals.map((h) => (
+              <option key={h.uuid} value={h.uuid}>
+                {h.name}
+              </option>
+            ))}
+          </select>
+        )}
 
         <input
           name="image"
@@ -201,7 +213,7 @@ export default function QLHH() {
               <th>Bệnh viện</th>
               <th>Ngày tạo</th>
               <th>Ngày cập nhật</th>
-              <th>Hành động</th>
+<th>Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -240,7 +252,7 @@ export default function QLHH() {
                     className="delete-btn"
                     onClick={() => handleDelete(item.uuid)}
                   >
-                     Xoá
+                     Xoá
                   </button>
                 </td>
               </tr>

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import ApiService from "../../src/services/apiService"; // Đường dẫn đúng theo project của fen
+import "../Screen/Register.css"; // Dùng lại CSS login
+import logoBlue from "../assets/images/logoBlue.png";
+import logo2 from "../assets/images/logoBlue.png";
+import Swal from "sweetalert2";
 
-export default function Register() {
+function Register() {
   const [form, setForm] = useState({
     premission_id: "",
     username: "",
@@ -11,8 +14,6 @@ export default function Register() {
     phone: "",
     address: "",
   });
-
-  const sanitizeInput = (value) => value.trim();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,19 +25,25 @@ export default function Register() {
 
     const userData = {
       premission_id: Number(form.premission_id),
-      username: sanitizeInput(form.username),
-      password: sanitizeInput(form.password),
-      email: sanitizeInput(form.email),
-      name: sanitizeInput(form.name),
-      phone: sanitizeInput(form.phone),
-      address: sanitizeInput(form.address),
+      username: form.username.trim(),
+      password: form.password.trim(),
+      email: form.email.trim(),
+      name: form.name.trim(),
+      phone: form.phone.trim(),
+      address: form.address.trim(),
     };
 
     try {
-      const result = await ApiService.post("/auth/register", userData);
-      if (result.code === 200) {
-        alert("Đăng ký thành công!");
-        // Reset form
+      const res = await fetch("https://your-api-url.com/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.code === 200) {
+        Swal.fire("Đăng ký thành công!", "", "success");
         setForm({
           premission_id: "",
           username: "",
@@ -47,81 +54,67 @@ export default function Register() {
           address: "",
         });
       } else {
-        alert("Đăng ký thất bại: " + result.msg);
+        Swal.fire("Thất bại", result.message || "Có lỗi xảy ra", "error");
       }
     } catch (err) {
-      console.error("Lỗi khi gọi API đăng ký:", err);
-      alert("Đăng ký thất bại!");
+      console.error(err);
+      Swal.fire("Lỗi hệ thống", "Vui lòng thử lại sau.", "error");
     }
   };
 
   return (
-    <div className="register-container">
-      <form onSubmit={handleSubmit} className="register-form">
-        <h2>Đăng ký người dùng</h2>
+    <div>
+      <div className="headers">
+      
+        <p className="title">Đăng ký</p>
+      </div>
 
-        <input
-          type="number"
-          name="premission_id"
-          placeholder="Permission ID"
-          value={form.premission_id}
-          onChange={handleChange}
-          required
-        />
+      <div className="body">
+        <div className="logo2Container">
+          <img className="logoimg2" src={logo2} alt="logo2" />
+        </div>
 
-        <input
-          type="text"
-          name="username"
-          placeholder="Tên đăng nhập"
-          value={form.username}
-          onChange={handleChange}
-          required
-        />
+        <div className="login-Container">
+          <div className="textF-Container">
+            <h1 className="text-login">Đăng ký</h1>
+            <p className="text-loginR">, tạo tài khoản để tiếp tục</p>
+          </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Mật khẩu"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
+          <div className="inputLogin">
+            {[
+              { name: "premission_id", label: "Permission ID", type: "number" },
+              { name: "username", label: "Tên đăng nhập", type: "text" },
+              { name: "password", label: "Mật khẩu", type: "password" },
+              { name: "email", label: "Email", type: "email" },
+              { name: "name", label: "Họ tên", type: "text" },
+              { name: "phone", label: "Số điện thoại", type: "text" },
+              { name: "address", label: "Địa chỉ", type: "text" },
+            ].map((field) => (
+              <div className="inside-input" key={field.name}>
+                <label className="label">{field.label}</label>
+                <input
+                  className="input"
+                  name={field.name}
+                  type={field.type}
+                  placeholder={field.label}
+                  value={form[field.name]}
+                  onChange={handleChange}
+                  required={["username", "email", "password", "premission_id"].includes(field.name)}
+                />
+              </div>
+            ))}
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="text"
-          name="name"
-          placeholder="Họ và tên"
-          value={form.name}
-          onChange={handleChange}
-        />
-
-        <input
-          type="text"
-          name="phone"
-          placeholder="Số điện thoại"
-          value={form.phone}
-          onChange={handleChange}
-        />
-
-        <input
-          type="text"
-          name="address"
-          placeholder="Địa chỉ"
-          value={form.address}
-          onChange={handleChange}
-        />
-
-        <button type="submit">Đăng ký</button>
-      </form>
+            <button onClick={handleSubmit} className="btn-login">
+              Đăng ký
+            </button>
+            <a className="forgot-password" href="/Loginn" alt="insert">
+              Đăng nhập
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+
+export default Register;

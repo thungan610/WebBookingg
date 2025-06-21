@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import "./App.css";
 
-import Login from "./Screen/Login";
+
 import Products from "./Screen/Products";
 import AddProduct from "./Navigate/Sidebar";
 import InsertProduct from "./Screen/InsertProduct";
@@ -86,17 +86,16 @@ function App() {
               <Route path="/Review" element={<Review />} />
               <Route path="/ChartRevenue" element={<TopProductsChart />} />
               <Route path="/OrderDetail/:id" element={<OrderDetail />} />
-              <Route path="/login" element={<Navigate to="/charts" />} />
-              <Route path="/Loginn" element={<Loginn />} />
+              <Route path="/loginn" element={<Navigate to="/charts" />} />
               <Route path="/Register" element={<Register />} />
             </Routes>
           </NavMenu>
         </AdminProvider>
       ) : (
         <Routes>
-          <Route path="/login" element={<Login saveAdmin={saveAdminInfo} />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-          <Route path="/ResetPassword" element={<ResetPassword />} />
+          <Route path="/loginn" element={<Loginn saveAdmin={saveAdminInfo} />} />
+          <Route path="*" element={<Navigate to="/loginn" replace />} />
+          <Route path="/Register" element={<Register />} />
 
         </Routes>
       )}

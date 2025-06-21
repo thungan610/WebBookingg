@@ -54,6 +54,14 @@
   background-color: #f0f0f0;
 }
 
+.login-Container {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  margin-top:100px;
+}
 .admin-image {
   width: 60px;
   height: 60px;
