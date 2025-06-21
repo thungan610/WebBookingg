@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import ApiService from "../../src/services/apiService"; // Cập nhật lại nếu cần
-import "./Products.css";
+import ApiService from "../services/apiService";
+import "./Products.css"; // CSS riêng nếu có
 
 export default function AdminTable() {
   const [data, setData] = useState([]);
@@ -12,32 +12,41 @@ export default function AdminTable() {
     imageUrl: "",
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
 
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
         const result = await ApiService.get("/hospital/getAll");
-        if (result.code === 200) {
-          setData(result.data);
-        }
+        if (result.code === 200) setData(result.data);
       } catch (err) {
         console.error("Lỗi khi tải dữ liệu:", err);
       }
     };
-
     fetchHospitals();
   }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "imageFile") {
+      const file = files[0];
       setForm((prev) => ({
         ...prev,
-        imageFile: files[0],
-        imageUrl: "", // reset link nếu chọn file
+        imageFile: file,
+        imageUrl: "", // reset link nếu có file
       }));
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => setPreviewImage(reader.result);
+        reader.readAsDataURL(file);
+      } else {
+        setPreviewImage("");
+      }
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
+      if (name === "imageUrl") {
+        setPreviewImage(value); // preview link ảnh
+      }
     }
   };
 
@@ -48,13 +57,11 @@ export default function AdminTable() {
       formData.append("name", form.name);
       formData.append("address", form.address);
 
-      // Ưu tiên ảnh từ máy, nếu không có thì dùng link ảnh
       if (form.imageFile) {
         formData.append("image", form.imageFile);
       } else if (form.imageUrl) {
-        formData.append("image", form.imageUrl); // ✅ đổi tên thành 'image'
+        formData.append("image", form.imageUrl);
       }
-      
 
       if (isEditing) {
         await ApiService.put(`/hospital/update/${form.uuid}`, formData);
@@ -63,7 +70,6 @@ export default function AdminTable() {
         setData((prev) => [...prev, res.data]);
       }
 
-      // Reset form
       setForm({
         uuid: "",
         name: "",
@@ -71,9 +77,9 @@ export default function AdminTable() {
         imageFile: null,
         imageUrl: "",
       });
+      setPreviewImage("");
       setIsEditing(false);
 
-      // Reload data
       const updated = await ApiService.get("/hospital/getAll");
       setData(updated.data);
     } catch (error) {
@@ -89,6 +95,7 @@ export default function AdminTable() {
       imageFile: null,
       imageUrl: item.image || "",
     });
+    setPreviewImage(item.image || "");
     setIsEditing(true);
   };
 
@@ -102,17 +109,17 @@ export default function AdminTable() {
   };
 
   return (
-    <div className="p-4 max-w-5xl mx-auto">
+    <div className="p-4 max-w-5xl mx-auto overflow-y-auto min-h-screen bg-gray-50">
       <h1 className="text-2xl font-bold mb-4">Quản lý bệnh viện</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+      <form onSubmit={handleSubmit} className="space-y-4 mb-6 bg-white p-4 rounded shadow">
         <input
           type="text"
           name="name"
           placeholder="Tên bệnh viện"
           value={form.name}
           onChange={handleChange}
-          className="border p-2 w-full"
+          className="border p-2 w-full rounded"
           required
         />
         <input
@@ -121,37 +128,47 @@ export default function AdminTable() {
           placeholder="Địa chỉ"
           value={form.address}
           onChange={handleChange}
-          className="border p-2 w-full"
+          className="border p-2 w-full rounded"
           required
         />
 
-        {/* Gộp chọn ảnh và nhập link ảnh vào cùng một dòng */}
-        <div className="flex gap-2 items-center">
-          {/* <input
+        <div className="flex gap-2">
+          <input
             type="file"
             name="imageFile"
             accept="image/*"
             onChange={handleChange}
-            className="border p-2 w-1/2"
-          /> */}
+            className="border p-2 w-1/2 rounded"
+          />
           <input
             type="text"
             name="imageUrl"
             placeholder="Hoặc dán link ảnh (https://...)"
             value={form.imageUrl}
             onChange={handleChange}
-            className="border p-2 w-1/2"
+            className="border p-2 w-1/2 rounded"
           />
         </div>
 
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+        {previewImage && (
+          <div>
+            <p className="text-sm text-gray-500 mb-1">Xem trước ảnh:</p>
+            <img
+              src={previewImage}
+              alt="Preview"
+              className="w-24 h-24 object-cover border rounded"
+            />
+          </div>
+        )}
+
+        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
           {isEditing ? "Cập nhật" : "Thêm mới"}
         </button>
       </form>
-  
-      <div className="overflow-auto max-h-[400px] border rounded">
-       <div className="table-scroll">
-        <table className="min-w-full border">
+
+      <div className="overflow-auto max-h-[200px] border rounded bg-white">
+      <div className="table-scroll">
+        <table className="min-w-full table-auto text-sm">
           <thead className="bg-gray-100 sticky top-0 z-10">
             <tr>
               <th className="border p-2">Tên</th>
@@ -169,22 +186,22 @@ export default function AdminTable() {
                   <img
                     src={item.image || "https://via.placeholder.com/100"}
                     alt="Ảnh"
-                    className="w-16 h-16 object-cover"
+                    className="w-16 h-16 object-cover rounded"
                     onError={(e) =>
                       (e.target.src = "https://via.placeholder.com/100")
                     }
                   />
                 </td>
-                <td className="border p-2">
+                <td className="border p-2 space-x-2">
                   <button
                     onClick={() => handleEdit(item)}
-                    className="bg-yellow-400 px-2 py-1 mr-2 rounded"
+                    className="bg-yellow-400 px-3 py-1 rounded hover:bg-yellow-500"
                   >
                     Sửa
                   </button>
                   <button
                     onClick={() => handleDelete(item.uuid)}
-                    className="bg-red-500 px-2 py-1 text-white rounded"
+                    className="bg-red-500 px-3 py-1 text-white rounded hover:bg-red-600"
                   >
                     Xoá
                   </button>

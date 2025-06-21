@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import "../Screen/Login.css"; // dùng lại style của màn login gốc
+import { useNavigate } from "react-router-dom";
+import "../Screen/Login.css"; // dùng lại style của login
 import logoBlue from "../assets/images/logoBlue.png";
 import eyesoff from "../assets/images/eyesoff.png";
 import eyeson from "../assets/images/eyeson.png";
 import ApiService from "../../src/services/apiService";
 
-export default function Loginn() {
+export default function Loginn(props) {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -45,7 +48,9 @@ export default function Loginn() {
         localStorage.setItem("access_token", user.access_token);
         localStorage.setItem("refresh_token", user.refresh_token);
 
-        // window.location.href = "/dashboard";
+        props.saveAdmin(user); // ✅ Cập nhật admin vào App
+
+        navigate("/charts"); // ✅ Chuyển hướng vào bên trong
       } else {
         alert("Đăng nhập thất bại: " + result.msg);
       }
@@ -58,15 +63,12 @@ export default function Loginn() {
   return (
     <div>
       <div className="headers">
-       
         <p className="title">Đăng nhập</p>
-       
       </div>
 
       <div className="body">
         <div className="logo2Container">
           <img className="logoimg2" src={logoBlue} alt="logo" />
-          
         </div>
 
         <div className="login-Container">
@@ -124,7 +126,7 @@ export default function Loginn() {
             <button onClick={handleSubmit} className="btn-login">
               Đăng nhập
             </button>
-            <a className="forgot-password" href="/Register" alt="insert">
+            <a className="forgot-password" href="/Register">
               Đăng ký
             </a>
           </div>

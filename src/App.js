@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import "./App.css";
 
-
+import Login from "./Screen/Login";
 import Products from "./Screen/Products";
 import AddProduct from "./Navigate/Sidebar";
 import InsertProduct from "./Screen/InsertProduct";
@@ -86,7 +86,8 @@ function App() {
               <Route path="/Review" element={<Review />} />
               <Route path="/ChartRevenue" element={<TopProductsChart />} />
               <Route path="/OrderDetail/:id" element={<OrderDetail />} />
-              <Route path="/loginn" element={<Navigate to="/charts" />} />
+              <Route path="/login" element={<Navigate to="/charts" />} />
+              <Route path="/Loginn" element={<Loginn />} />
               <Route path="/Register" element={<Register />} />
             </Routes>
           </NavMenu>

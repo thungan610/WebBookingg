@@ -1,10 +1,23 @@
+/* Container toàn màn */
 .register-container {
   font-family: Arial, sans-serif;
   background-color: #f4f7fa;
-  min-height: 100vh;
-  
+  height: 100vh; /* chiếm toàn bộ chiều cao viewport */
+  overflow-y: auto; /* tự hiện thanh cuộn khi cần */
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
 }
 
+.login-Container{
+  width: 500px;
+}
 /* Header */
 .headers {
   background-color: #5fb3ec;
@@ -20,80 +33,57 @@
   font-weight: bold;
 }
 
-.titleRight {
-  font-size: 14px;
-  cursor: pointer;
-}
-
-/* Body Layout */
+/* Body */
 .body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
   gap: 40px;
   padding: 30px 10px;
-  margin-top: -20px; /* đẩy toàn bộ form + logo lên gần header */
-  
+  margin-top: -20px;
 }
 
 /* Logo */
 .logo2Container {
+ 
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 250px;
 }
 
 .logoimg2 {
-  height: 160px;
+  height: 260px;
+  margin-top:200px;
 }
 
 /* Form Container */
-.login-Container {
-  background-color: #ffffff;
-  padding: 24px;
+.register-form {
+  background: white;
+  padding: 30px 40px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  width: 500px;
-  margin-top:-1px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  margin-top: 40px;
 }
 
-/* Heading */
-.textF-Container {
+.register-form h2 {
   text-align: center;
-  margin-bottom: 2px;
-}
-
-.text-login {
-  font-size: 24px;
-  font-weight: bold;
+  margin-bottom: 20px;
   color: #007bff;
 }
 
-.text-loginR {
-  font-size: 14px;
-  color: #444;
-}
-
-/* Input & Label */
-.inputLogin .inside-input {
-  margin-bottom: 0px;
-}
-
-.label {
-  font-weight: 500;
-  display: block;
-}
-
-.input {
-  width: 100%;  
-  border-radius: 6px;
+/* Input field */
+.register-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
   border: 1px solid #ccc;
+  border-radius: 6px;
   font-size: 14px;
 }
 
 /* Button */
-.btn-login {
+.register-form button {
   width: 100%;
   padding: 12px;
   background-color: #007bff;
@@ -106,28 +96,20 @@
   transition: background-color 0.3s ease;
 }
 
-.btn-login:hover {
+.register-form button:hover {
   background-color: #0056b3;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .body {
-    flex-direction: column;
-    align-items: center;
-    margin-top: 0;
-  }
-
-  .logoimg2 {
-    height: 120px;
-    margin-bottom: 10px;
-  }
-
-  .login-Container {
-    width: 90%;
-  }
+/* Link dưới nút */
+.register-form .forgot-password {
+  display: block;
+  margin-top: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #007bff;
+  text-decoration: none;
 }
-html, body {
-  height: 100%;
-  overflow-y: auto;
+
+.register-form .forgot-password:hover {
+  text-decoration: underline;
 }
