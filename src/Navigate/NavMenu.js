@@ -100,17 +100,17 @@ const NavMenu = ({ children, isHidden, onLogout }) => {
               style={{ height: "50%", borderRight: 0 }}
               items={[
                 {
-                  key: "/products",
+                  key: "/Hospital",
                   icon: <ReconciliationOutlined />,
                   label: "Bệnh Viện",
                 },
                 {
-                  key: "/charts",
+                  key: "/Clinic",
                   icon: <MessageOutlined />,
                   label: "Phòng Khám",
                 },
                 {
-                  key: "/userManage",
+                  key: "/Doctor",
                   icon: <UserOutlined />,
                   label: "Quản lý bác sĩ",
                 },
@@ -127,7 +127,7 @@ const NavMenu = ({ children, isHidden, onLogout }) => {
                   label: "Hồ Sơ Bệnh Án",
                 },
                 {
-                  key: "/QLHH",
+                  key: "/MedicalService",
                   icon: <BarChartOutlined />,
                   label: "Dịch vụ y tế",
                 },

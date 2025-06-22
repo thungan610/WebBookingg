@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ApiService from "../../src/services/apiService";
-import "./Chart.css";
+import "./Review.css";
 
 export default function Review() {
   const [reviews, setReviews] = useState([]);

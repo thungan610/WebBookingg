@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ Dùng để điều hướng
 import ApiService from "../../src/services/apiService";
 import "../Screen/Register.css"; // Dùng lại style login
 import logoBlue from "../assets/images/logoBlue.png";
 
 export default function Register() {
+  const navigate = useNavigate(); // ✅ Hook để chuyển trang
+
   const [form, setForm] = useState({
     premission_id: 1,
     username: "",
@@ -38,15 +41,7 @@ export default function Register() {
       const result = await ApiService.post("/auth/register", userData);
       if (result.code === 200) {
         alert("Đăng ký thành công!");
-        setForm({
-          premission_id: 1,
-          username: "",
-          password: "",
-          email: "",
-          name: "",
-          phone: "",
-          address: "",
-        });
+        navigate("/Loginn"); // ✅ Điều hướng sang trang đăng nhập
       } else {
         alert("Đăng ký thất bại: " + result.msg);
       }

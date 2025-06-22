@@ -1,10 +1,10 @@
 // File: src/pages/QLHH.jsx
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import ApiService from "../../src/services/apiService";
-import "./QLHH.css";
+import ApiService from "../services/apiService";
+import "./MedicalService.css";
 
-export default function QLHH() {
+export default function MedicalService() {
   const [services, setServices] = useState([]);
   const [form, setForm] = useState({
     uuid: "",

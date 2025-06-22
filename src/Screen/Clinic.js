@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ApiService from "../../src/services/apiService";
-import "./Review.css";
+import "./Clinic.css";
 
-export default function Review() {
+export default function Clinic() {
   const [data, setData] = useState([]);
+  const [hospitals, setHospitals] = useState([]);
   const [form, setForm] = useState({
     uuid: "",
     name: "",
@@ -17,6 +18,7 @@ export default function Review() {
 
   useEffect(() => {
     fetchClinics();
+    fetchHospitals();
   }, []);
 
   const fetchClinics = async () => {
@@ -25,6 +27,15 @@ export default function Review() {
       if (result.code === 200) setData(result.data);
     } catch (err) {
       console.error("Lỗi khi tải dữ liệu phòng ban:", err);
+    }
+  };
+
+  const fetchHospitals = async () => {
+    try {
+      const result = await ApiService.get("/hospital/getAll");
+      if (result.code === 200) setHospitals(result.data);
+    } catch (err) {
+      console.error("Lỗi khi tải danh sách bệnh viện:", err);
     }
   };
 
@@ -41,7 +52,7 @@ export default function Review() {
       formData.append("address", form.address);
       formData.append("phone", form.phone);
       formData.append("email", form.email);
-      formData.append("image", form.image); // link ảnh
+      formData.append("image", form.image);
       formData.append("hospital_id", form.hospital_id);
 
       if (isEditing) {
@@ -104,7 +115,7 @@ export default function Review() {
           onChange={handleChange}
           placeholder="SĐT"
         />
-        <input
+<input
           name="email"
           value={form.email}
           onChange={handleChange}
@@ -116,12 +127,21 @@ export default function Review() {
           onChange={handleChange}
           placeholder="Link ảnh (https://...)"
         />
-        <input
+
+        <select
           name="hospital_id"
           value={form.hospital_id}
           onChange={handleChange}
-          placeholder="Mã bệnh viện"
-        />
+     
+        >
+          <option value="">-- Chọn bệnh viện --</option>
+          {hospitals.map((h) => (
+            <option key={h.uuid} value={h.uuid}>
+              {h.name}
+            </option>
+          ))}
+        </select>
+
         <button type="submit">{isEditing ? "Cập nhật" : "Thêm mới"}</button>
       </form>
 
@@ -155,7 +175,6 @@ export default function Review() {
                     }}
                   />
                 </td>
-
                 <td>{new Date(item.created_at).toLocaleString()}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(item)}>

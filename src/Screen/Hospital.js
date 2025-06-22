@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ApiService from "../services/apiService";
-import "./Products.css"; // CSS riêng nếu có
+import "./Hospital.css"; // CSS riêng nếu có
 
-export default function AdminTable() {
+export default function Hospital() {
   const [data, setData] = useState([]);
   const [form, setForm] = useState({
     uuid: "",
