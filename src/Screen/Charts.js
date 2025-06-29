@@ -12,6 +12,7 @@ export default function Review() {
     email: "",
     image: "",
     hospital_id: "",
+    introduce: "", // Thêm trường giới thiệu
   });
   const [isEditing, setIsEditing] = useState(false);
 
@@ -41,8 +42,9 @@ export default function Review() {
       formData.append("address", form.address);
       formData.append("phone", form.phone);
       formData.append("email", form.email);
-      formData.append("image", form.image); // link ảnh
+      formData.append("image", form.image);
       formData.append("hospital_id", form.hospital_id);
+      formData.append("introduce", form.introduce); // Gửi giới thiệu
 
       if (isEditing) {
         await ApiService.put(`/clinic/update/${form.uuid}`, formData);
@@ -58,6 +60,7 @@ export default function Review() {
         email: "",
         image: "",
         hospital_id: "",
+        introduce: "",
       });
       setIsEditing(false);
       fetchClinics();
@@ -67,7 +70,16 @@ export default function Review() {
   };
 
   const handleEdit = (item) => {
-    setForm(item);
+    setForm({
+      uuid: item.uuid,
+      name: item.name,
+      address: item.address,
+      phone: item.phone,
+      email: item.email,
+      image: item.image,
+      hospital_id: item.hospital_id,
+      introduce: item.introduce || "", // Nếu null thì set chuỗi rỗng
+    });
     setIsEditing(true);
   };
 
@@ -83,45 +95,15 @@ export default function Review() {
   return (
     <div className="admin-container">
       <h2 className="admin-title">Quản lý phòng ban</h2>
+
       <form onSubmit={handleSubmit} className="admin-form">
-        <input
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          placeholder="Tên"
-          required
-        />
-        <input
-          name="address"
-          value={form.address}
-          onChange={handleChange}
-          placeholder="Địa chỉ"
-          required
-        />
-        <input
-          name="phone"
-          value={form.phone}
-          onChange={handleChange}
-          placeholder="SĐT"
-        />
-        <input
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder="Email"
-        />
-        <input
-          name="image"
-          value={form.image}
-          onChange={handleChange}
-          placeholder="Link ảnh (https://...)"
-        />
-        <input
-          name="hospital_id"
-          value={form.hospital_id}
-          onChange={handleChange}
-          placeholder="Mã bệnh viện"
-        />
+        <input name="name" value={form.name} onChange={handleChange} placeholder="Tên" required />
+        <input name="address" value={form.address} onChange={handleChange} placeholder="Địa chỉ" required />
+        <input name="phone" value={form.phone} onChange={handleChange} placeholder="SĐT" />
+        <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
+        <input name="image" value={form.image} onChange={handleChange} placeholder="Link ảnh (https://...)" />
+        <input name="hospital_id" value={form.hospital_id} onChange={handleChange} placeholder="Mã bệnh viện" />
+        <input name="introduce" value={form.introduce} onChange={handleChange} placeholder="Giới thiệu" />
         <button type="submit">{isEditing ? "Cập nhật" : "Thêm mới"}</button>
       </form>
 
@@ -133,6 +115,7 @@ export default function Review() {
               <th>Địa chỉ</th>
               <th>SĐT</th>
               <th>Email</th>
+              <th>Giới thiệu</th>
               <th>Ảnh</th>
               <th>Tạo lúc</th>
               <th>Hành động</th>
@@ -145,6 +128,7 @@ export default function Review() {
                 <td>{item.address}</td>
                 <td>{item.phone}</td>
                 <td>{item.email}</td>
+                <td>{item.introduce || "..."}</td>
                 <td>
                   <img
                     src={item.image || "https://via.placeholder.com/80"}
@@ -155,16 +139,12 @@ export default function Review() {
                     }}
                   />
                 </td>
-
                 <td>{new Date(item.created_at).toLocaleString()}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(item)}>
                     Sửa
                   </button>
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(item.uuid)}
-                  >
+                  <button className="delete-btn" onClick={() => handleDelete(item.uuid)}>
                     Xoá
                   </button>
                 </td>

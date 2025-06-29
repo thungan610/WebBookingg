@@ -122,7 +122,7 @@ const NavMenu = ({ children, isHidden, onLogout }) => {
                   label: "Review",
                 },
                 {
-                  key: "/MedicalRecordList",
+                  key: "/VaccinationCenter",
                   icon: <TagOutlined />,
                   label: "Hồ Sơ Bệnh Án",
                 },

@@ -1,7 +1,7 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 10px;
 }
 
 h2 {
@@ -12,7 +12,7 @@ h2 {
 
 /* Scrollable table wrapper */
 .table-scroll {
-  max-height: 350px;
+  height: 300px;
   overflow-y: auto;
   border: 1px solid #d1d5db;
   box-shadow: 0 1px 6px #0001;
@@ -35,6 +35,14 @@ h2 {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 #f1f5f9;
 }
+
+.admin-table td,
+.admin-table th {
+  padding: 5px 7  px; /* Giảm padding */
+  line-height: 1.2;  /* Dòng thấp hơn */
+  font-size: 14px;   /* Font nhỏ hơn */
+}
+
 
 /* ✅ FORM GRID 3 CỘT */
 form {
@@ -109,4 +117,18 @@ img {
 .action-buttons .delete {
   background-color: #dc3545;
   color: white;
+}
+.admin-form div {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 30%;
+}
+
+.admin-form label {
+  font-weight: 500;
+
+}
+
+.hospital_id{
+  
 }

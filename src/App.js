@@ -26,11 +26,11 @@ import Comment from "./Screen/Comment";
 import Payment from "./Screen/Payment";
 import ChartWeek from "./Screen/ChartWeek"
 import OrderDetail from "./Screen/OrderDetail";
-import PromotionManagementment from "./Screen/MedicalRecordList";
+import PromotionManagementment from "./Screen/VaccinationCenter";
 import UpdateSale from "./Screen/UpdateSale";
 import TopProductsChart from "./Screen/ChartWeek";
 import Review from "./Screen/Revview";
-import MedicalRecordList from "./Screen/MedicalRecordList";
+import VaccinationCenter from "./Screen/VaccinationCenter";
 import Register from "./Screen/Register";
 import Loginn from "./Screen/Loginn";
 function App() {
@@ -78,7 +78,7 @@ function App() {
               <Route path="/update-Product/:id" element={<UpdateProduct />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/QLHH" element={<QLHH />} />
-              <Route path="/MedicalRecordList" element={<MedicalRecordList />} />
+              <Route path="/VaccinationCenter" element={<VaccinationCenter />} />
               <Route path="/Comment" element={<Comment />} />
               <Route path="/AddSale" element={<AddSale />} />
               <Route path="/UpdateSale/:id" element={<UpdateSale />} />

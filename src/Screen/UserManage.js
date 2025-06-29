@@ -1,41 +1,46 @@
 import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import ApiService from "../../src/services/apiService";
-import "./Review.css";
+import "./UserManage.css";
 
-export default function Review() {
-  const [data, setData] = useState([]);
+export default function DoctorManager() {
+  const [doctors, setDoctors] = useState([]);
   const [hospitals, setHospitals] = useState([]);
   const [form, setForm] = useState({
     uuid: "",
-    name: "",
-    address: "",
-    phone: "",
-    email: "",
-    image: "",
+    user_name: "",
     hospital_id: "",
+    clinic_id: "",
+    doctor_type: "",
+    specialization_id: "",
+    license: "",
+    introduce: "",
+    experience: 0,
+    patient_count: 0,
+    image: "",
   });
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    fetchClinics();
+    fetchDoctors();
     fetchHospitals();
   }, []);
 
-  const fetchClinics = async () => {
+  const fetchDoctors = async () => {
     try {
-      const result = await ApiService.get("/clinic/getAll");
-      if (result.code === 200) setData(result.data);
+      const res = await ApiService.get("/doctor/getAll");
+      if (res.code === 200) setDoctors(res.data);
     } catch (err) {
-      console.error("Lỗi khi tải dữ liệu phòng ban:", err);
+      console.error("Lỗi khi tải danh sách bác sĩ:", err);
     }
   };
 
   const fetchHospitals = async () => {
     try {
-      const result = await ApiService.get("/hospital/getAll");
-      if (result.code === 200) setHospitals(result.data);
+      const res = await ApiService.get("/hospital/getAll");
+      if (res.code === 200) setHospitals(res.data);
     } catch (err) {
-      console.error("Lỗi khi tải danh sách bệnh viện:", err);
+      console.error("Lỗi khi tải bệnh viện:", err);
     }
   };
 
@@ -46,46 +51,57 @@ export default function Review() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("name", form.name);
-      formData.append("address", form.address);
-      formData.append("phone", form.phone);
-      formData.append("email", form.email);
-      formData.append("image", form.image);
-      formData.append("hospital_id", form.hospital_id);
 
+    if (!form.hospital_id) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Thiếu thông tin",
+        text: "Vui lòng chọn bệnh viện!",
+      });
+    }
+
+    const formData = new FormData();
+    for (const key in form) formData.append(key, form[key]);
+
+    try {
       if (isEditing) {
-        await ApiService.put(`/clinic/update/${form.uuid}`, formData);
+        await ApiService.put(`/doctor/update/${form.uuid}`, formData);
+        Swal.fire({ icon: "success", title: "Cập nhật thành công" });
       } else {
-        await ApiService.post("/clinic/add", formData);
+        await ApiService.post("/doctor/create", formData);
+        Swal.fire({ icon: "success", title: "Thêm mới thành công" });
       }
 
       setForm({
         uuid: "",
-        name: "",
-        address: "",
-        phone: "",
-        email: "",
-        image: "",
+        user_name: "",
         hospital_id: "",
+        clinic_id: "",
+        doctor_type: "",
+        specialization_id: "",
+        license: "",
+        introduce: "",
+        experience: 0,
+        patient_count: 0,
+        image: "",
       });
       setIsEditing(false);
-      fetchClinics();
+      fetchDoctors();
     } catch (err) {
       console.error("Lỗi khi gửi form:", err);
     }
   };
 
   const handleEdit = (item) => {
-    setForm(item);
+    setForm({ ...item, user_name: item.user_name || "" });
     setIsEditing(true);
   };
 
   const handleDelete = async (uuid) => {
     try {
-      await ApiService.delete(`/clinic/delete/${uuid}`);
-      fetchClinics();
+      await ApiService.delete(`/doctor/delete/${uuid}`);
+      Swal.fire({ icon: "success", title: "Xóa thành công" });
+      fetchDoctors();
     } catch (err) {
       console.error("Lỗi khi xoá:", err);
     }
@@ -93,55 +109,19 @@ export default function Review() {
 
   return (
     <div className="admin-container">
-      <h2 className="admin-title">Quản lý phòng ban</h2>
+      <h2 className="admin-title">Quản lý bác sĩ</h2>
+
       <form onSubmit={handleSubmit} className="admin-form">
-        <input
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          placeholder="Tên"
-          required
-        />
-        <input
-          name="address"
-          value={form.address}
-          onChange={handleChange}
-          placeholder="Địa chỉ"
-          required
-        />
-        <input
-          name="phone"
-          value={form.phone}
-          onChange={handleChange}
-          placeholder="SĐT"
-        />
-<input
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder="Email"
-        />
-        <input
-          name="image"
-          value={form.image}
-          onChange={handleChange}
-          placeholder="Link ảnh (https://...)"
-        />
-
-        <select
-          name="hospital_id"
-          value={form.hospital_id}
-          onChange={handleChange}
-     
-        >
-          <option value="">-- Chọn bệnh viện --</option>
-          {hospitals.map((h) => (
-            <option key={h.uuid} value={h.uuid}>
-              {h.name}
-            </option>
-          ))}
-        </select>
-
+        <div><label>Tên bác sĩ</label><input name="user_name" value={form.user_name} onChange={handleChange} required /></div>
+        <div><label>Bệnh viện</label><select name="hospital_id" value={form.hospital_id} onChange={handleChange} required><option value="">-- Chọn bệnh viện --</option>{hospitals.map((h) => (<option key={h.uuid} value={h.uuid}>{h.name}</option>))}</select></div>
+        <div><label>ID phòng khám</label><input name="clinic_id" value={form.clinic_id} onChange={handleChange} /></div>
+        <div><label>Loại bác sĩ</label><input name="doctor_type" value={form.doctor_type} onChange={handleChange} /></div>
+        <div><label>Chuyên khoa ID</label><input name="specialization_id" value={form.specialization_id} onChange={handleChange} /></div>
+        <div><label>Giấy phép hành nghề</label><input name="license" value={form.license} onChange={handleChange} /></div>
+        <div><label>Giới thiệu</label><input name="introduce" value={form.introduce} onChange={handleChange} /></div>
+        <div><label>Kinh nghiệm (năm)</label><input name="experience" type="number" value={form.experience} onChange={handleChange} /></div>
+        <div><label>Số bệnh nhân đã khám</label><input name="patient_count" type="number" value={form.patient_count} onChange={handleChange} /></div>
+        <div><label>Link ảnh (https://...)</label><input name="image" value={form.image} onChange={handleChange} /></div>
         <button type="submit">{isEditing ? "Cập nhật" : "Thêm mới"}</button>
       </form>
 
@@ -149,43 +129,37 @@ export default function Review() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Tên</th>
-              <th>Địa chỉ</th>
-              <th>SĐT</th>
-              <th>Email</th>
+              <th>Tên bác sĩ</th>
+              <th>Bệnh viện</th>
+              <th>Phòng khám</th>
+              <th>Loại</th>
+              <th>Chuyên khoa</th>
+              <th>Giấy phép</th>
+              <th>Kinh nghiệm</th>
+              <th>Số BN</th>
+              <th>Giới thiệu</th>
               <th>Ảnh</th>
-              <th>Tạo lúc</th>
+              <th>Ngày tạo</th>
               <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((item) => (
+            {doctors.map((item) => (
               <tr key={item.uuid}>
-                <td>{item.name}</td>
-                <td>{item.address}</td>
-                <td>{item.phone}</td>
-                <td>{item.email}</td>
-                <td>
-                  <img
-                    src={item.image || "https://via.placeholder.com/80"}
-                    alt="Ảnh"
-                    className="admin-image"
-                    onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/80";
-                    }}
-                  />
-                </td>
+                <td>{item.user_name}</td>
+                <td>{item.hospital_id}</td>
+                <td>{item.clinic_id}</td>
+                <td>{item.doctor_type}</td>
+                <td>{item.specialization_id}</td>
+                <td>{item.license}</td>
+                <td>{item.experience}</td>
+                <td>{item.patient_count}</td>
+                <td>{item.introduce}</td>
+                <td><img src={item.image || "https://via.placeholder.com/80"} alt="Ảnh" className="admin-image" onError={(e) => (e.target.src = "https://via.placeholder.com/80")} /></td>
                 <td>{new Date(item.created_at).toLocaleString()}</td>
                 <td>
-                  <button className="edit-btn" onClick={() => handleEdit(item)}>
-                    Sửa
-                  </button>
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(item.uuid)}
-                  >
-                    Xoá
-                  </button>
+                  <button className="edit-btn" onClick={() => handleEdit(item)}>Sửa</button>
+                  <button className="delete-btn" onClick={() => handleDelete(item.uuid)}>Xóa</button>
                 </td>
               </tr>
             ))}
