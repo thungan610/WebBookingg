@@ -6,6 +6,7 @@ import "./UserManage.css";
 export default function DoctorManager() {
   const [doctors, setDoctors] = useState([]);
   const [hospitals, setHospitals] = useState([]);
+  const [clinics, setClinics] = useState([]);
   const [form, setForm] = useState({
     uuid: "",
     user_name: "",
@@ -24,6 +25,7 @@ export default function DoctorManager() {
   useEffect(() => {
     fetchDoctors();
     fetchHospitals();
+    fetchClinics();
   }, []);
 
   const fetchDoctors = async () => {
@@ -44,6 +46,25 @@ export default function DoctorManager() {
     }
   };
 
+  const fetchClinics = async () => {
+    try {
+      const res = await ApiService.get("/clinic/getAll");
+      if (res.code === 200) setClinics(res.data);
+    } catch (err) {
+      console.error("Lỗi khi tải phòng khám:", err);
+    }
+  };
+
+  const getHospitalName = (id) => {
+    const found = hospitals.find(h => h.uuid === id);
+    return found ? found.name : id;
+  };
+
+  const getClinicName = (id) => {
+    const found = clinics.find(c => c.uuid === id);
+    return found ? found.name : id;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -51,7 +72,6 @@ export default function DoctorManager() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!form.hospital_id) {
       return Swal.fire({
         icon: "warning",
@@ -114,7 +134,7 @@ export default function DoctorManager() {
       <form onSubmit={handleSubmit} className="admin-form">
         <div><label>Tên bác sĩ</label><input name="user_name" value={form.user_name} onChange={handleChange} required /></div>
         <div><label>Bệnh viện</label><select name="hospital_id" value={form.hospital_id} onChange={handleChange} required><option value="">-- Chọn bệnh viện --</option>{hospitals.map((h) => (<option key={h.uuid} value={h.uuid}>{h.name}</option>))}</select></div>
-        <div><label>ID phòng khám</label><input name="clinic_id" value={form.clinic_id} onChange={handleChange} /></div>
+        <div><label>ID phòng khám</label><select name="clinic_id" value={form.clinic_id} onChange={handleChange}><option value="">-- Chọn phòng khám --</option>{clinics.map((c) => (<option key={c.uuid} value={c.uuid}>{c.name}</option>))}</select></div>
         <div><label>Loại bác sĩ</label><input name="doctor_type" value={form.doctor_type} onChange={handleChange} /></div>
         <div><label>Chuyên khoa ID</label><input name="specialization_id" value={form.specialization_id} onChange={handleChange} /></div>
         <div><label>Giấy phép hành nghề</label><input name="license" value={form.license} onChange={handleChange} /></div>
@@ -147,8 +167,8 @@ export default function DoctorManager() {
             {doctors.map((item) => (
               <tr key={item.uuid}>
                 <td>{item.user_name}</td>
-                <td>{item.hospital_id}</td>
-                <td>{item.clinic_id}</td>
+                <td>{getHospitalName(item.hospital_id)}</td>
+                <td>{getClinicName(item.clinic_id)}</td>
                 <td>{item.doctor_type}</td>
                 <td>{item.specialization_id}</td>
                 <td>{item.license}</td>
